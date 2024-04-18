@@ -1,4 +1,4 @@
-import gcodereader as gcr
+import gcodehandler as gcr
 import rtde_control
 import rtde_receive
 import re

@@ -1,4 +1,4 @@
-import gcodereader as gcr
+import gcodehandler as gch
 import rtde_control
 import rtde_receive
 import re
@@ -13,8 +13,8 @@ rotation = [0, 3.14, 0]
 rtde_c = rtde_control.RTDEControlInterface("192.168.3.102")
 rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
-gcreader = gcr.reader()
-commands = gcreader.readfile("20mm_cube.gcode")
+GCHandler = gch.GCodeHandler()
+commands = GCHandler.readfile("20mm_cube.gcode")
 
 
 class controller():
@@ -22,86 +22,21 @@ class controller():
         pass
 
     def returnHome(self):
-        rtde_c.moveJ([0,-3.14/2,0,-3.14/2,0,0], 2, 2)
-        rtde_c.moveJ([math.radians(13), math.radians(-120), math.radians(-103), math.radians(-45), math.radians(90), math.radians(0),], 2, 2)
+        rtde_c.moveJ([math.radians(13), math.radians(-120), math.radians(-103), math.radians(-45), math.radians(90), math.radians(90),], 2, 2)
                 
-
-    def extractCoordinates(self, string):
-        #extracts coordinates from command
-        #extracts G0|G1 in [g,x,y,z,f,e]
-        g = re.findall('(G[\d.]+)', string)
-        x = list(map(float, re.findall('X([\d.]+)', string)))
-        y = list(map(float, re.findall('Y([\d.]+)', string)))
-        z = list(map(float, re.findall('Z([\d.]+)', string)))
-        f = list(map(float, re.findall('F([\d.]+)', string)))
-        e = list(map(float, re.findall('E([\d.]+)', string)))
-
-        tmp = [x, y, z]
-        tmp2 = [g, None, None, None, f, e]
-        result = []
-
-
-        #TODO this is gross
-        #TODO find a better way other than 3 lists and 2 forloops
-        for i, coord in enumerate(tmp):
-            if coord:
-                #divide by 1000 since gcode uses mm values and we use meter
-                tmp2[i+1] = [round(coord[0]/1000, 8)]
-
-        for i in tmp2:
-            if i:
-                result.append(i[0])
-            else:
-                result.append(None)
-
-        return result
-
-
-    def convertCode(self, commands):
-        #conta
-        path = []
-        for i in commands:
-            #NOTE THAT I CHANGED THE NAME OF THE SPLITTED 'i'
-            cmd = i.split()
-            if not cmd:
-                continue
-            match cmd[0]:
-                #move with or without extruder
-                case "G0" | "G1":
-                    #print(self.extractCoordinates(i))
-                    path.append(self.extractCoordinates(i))
-                #return home
-                #TODO Check if filament stuff works with this method
-                case "G28":
-                    self.returnHome()
-                #Absolute Positioning
-                case "G90":
-                    pass
-                #Relative Positioning
-                case "G91":
-                    pass
-                #Set Position
-                case "G92":
-                    pass
-                case _:
-                    pass
-        return path
     
     def run(self, path):
         #the midpoint where the hotplate should sit is 0.46,0,0
+        #tot is to calculate a simple percentage meter
         tot = len(path)
         height = 0.0
         speed = 0.015
         for i, segment in enumerate(path):
-            print(f"{((i/tot)*100):.4f}% x: {segment[1]}, y: {segment[2]}, z: {height}")
-
-            
-
-
             
             match segment[0]:
                 #if it is either G0 or G1 make the move and 
                 case "G0" | "G1":
+                    print(f"{((i/tot)*100):.4f}% x: {segment[1]}, y: {segment[2]}, z: {height}")
                     #if height is set in the command change the command
                     if segment[3]:
                         height = segment[3]
@@ -124,12 +59,15 @@ class controller():
                         rtde_c.moveL([segment[1]+0.46, segment[2], height+0.1, rotation[0], rotation[1], rotation[2]], speed, 4)
                     
 
+                case "G28":
+                    self.returnHome()
+
 
             
 
 
 
 ctrl = controller()
-path = ctrl.convertCode(commands)
+path = GCHandler.convertCode(commands)
 ctrl.run(path)
 
