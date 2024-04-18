@@ -6,7 +6,6 @@ import math
 
 #TODO save magic constants in seperate file
 
-
 rotation = [0, 3.14, 0]
 
 #init robot connection
@@ -19,7 +18,10 @@ commands = GCHandler.readfile("20mm_cube.gcode")
 
 class controller():
     def __init__(self) -> None:
+        self.relative = False
         pass
+
+
 
     def returnHome(self):
         rtde_c.moveJ([math.radians(13), math.radians(-120), math.radians(-103), math.radians(-45), math.radians(90), math.radians(90),], 2, 2)
@@ -54,13 +56,24 @@ class controller():
                         #start printing if G1
                         pass
 
-                    #move the robotarm if both x and y exist
-                    if segment[1] and segment[2]:
-                        rtde_c.moveL([segment[1]+0.46, segment[2], height+0.1, rotation[0], rotation[1], rotation[2]], speed, 4)
+                    match self.relative:
+                        case True:
+                            pass
+                        
+                        case False:
+                            #move the robotarm if both x and y exist
+                            if segment[1] and segment[2]:
+                                rtde_c.moveL([segment[1]+0.46, segment[2], height+0.1, rotation[0], rotation[1], rotation[2]], speed, 4)
                     
-
                 case "G28":
                     self.returnHome()
+
+                #Absolute Positioning
+                case "G90":
+                    self.relative = False
+                #Relative Positioning
+                case "G91":
+                    self.relative = True
 
 
             
