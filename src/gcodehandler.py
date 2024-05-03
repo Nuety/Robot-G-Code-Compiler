@@ -29,7 +29,7 @@ class GCodeHandler:
                 #return home
                 #TODO Check if filament stuff works with this method
                 case "G28":
-                    path.append(["G28"])
+                    path.append(["G28", 0, 0, 0, 0, 0])
                 #Absolute Positioning
                 case "G90":
                     pass
