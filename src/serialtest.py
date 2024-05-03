@@ -1,22 +1,15 @@
-import serial
-import time
+import serial 
+import time 
+arduino = serial.Serial(port='/dev/cu.usbmodem1101', baudrate=115200, timeout=.01) 
+
+def write_read(x): 
+    arduino.write(bytes(x, 'utf-8')) 
+    data = arduino.readline() 
+    return data 
 
 
-arduino = serial.Serial(port='/dev/cu.usbmodem1101',   baudrate=115200, timeout=.1)
-
-
-
-def sendtoard(x):
-    arduino.write(bytes(x, 'utf-8'))
-    return
-
-# sendtoard('1')
-
-
-while (True):
-    inp = input()
-    arduino.write(bytes(inp, 'utf-8'))
-    data = arduino.readline()
-    print(data)
-
-arduino.close()
+while True: 
+    num = input("Enter a command: ") # Taking input from user 
+    value = write_read(num) 
+    # time.sleep(0.01)
+    print(value) # printing the value 
