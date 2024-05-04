@@ -1,5 +1,5 @@
-#include <Stepper.h>
 #include <AceRoutine.h>
+#include <AccelStepper.h>
 using namespace ace_routine;
 
 #define stp 8
@@ -20,25 +20,34 @@ float A = 0.4184502937e-03, B = 2.524894441e-04, C = 0.1879018527e-07;
 float maxHotendTemp = 30.0;
 float maxBedTemp = 30.0;
 
-
+AccelStepper stepper(1, stp, dir);
 bool servoRun = false;
-String x; 
+String Gcommand; 
 
 COROUTINE(Commands) {
   COROUTINE_LOOP() {
     while (!Serial.available()) {
       COROUTINE_DELAY(0);
     } 
-    x = Serial.readString(); 
-    if (x == "G1") {
-      servoRun = true;
-      Serial.print(servoRun);
-      
+    Gcommand = Serial.readString(); 
+    if (Gcommand.substring(0, 2) == "G1") {
+      servoRun = 1;      
     }
-    else if(x == "G0") {
-      servoRun = false;
-      Serial.print(servoRun);
+    else if(Gcommand.substring(0, 2) == "G0") {
+      servoRun = 0;
     } 
+    else if (Gcommand.substring(0, 4) == "M140") {
+      maxBedTemp = Gcommand.substring(4).toFloat();
+    }
+    else if (Gcommand.substring(0, 4) == "M190") {
+      maxBedTemp = Gcommand.substring(4).toFloat();
+    }
+    else if (Gcommand.substring(0, 4) == "M104") {
+      maxHotendTemp = Gcommand.substring(4).toFloat();
+    }
+    else if (Gcommand.substring(0, 4) == "M109") {
+      maxHotendTemp = Gcommand.substring(4).toFloat();
+    }
   }
 }
 
@@ -74,24 +83,16 @@ COROUTINE(HeatingRoutine){
 COROUTINE(ServoRoutine){
   COROUTINE_LOOP() {
       COROUTINE_AWAIT(servoRun);
-      digitalWrite(stp, HIGH);
-      digitalWrite(stp, LOW);
-      COROUTINE_DELAY(17.2787);
+      stepper.runSpeed();
   }
 }
 
 void setup() { 
 	Serial.begin(115200); 
 	Serial.setTimeout(1); 
-  pinMode(stp, OUTPUT);
-  pinMode(dir, OUTPUT);
-  pinMode(MS1, OUTPUT);
-  pinMode(MS2, OUTPUT);
-  pinMode(enable, OUTPUT);
-  digitalWrite(MS1, LOW);
-  digitalWrite(MS2, LOW);
-  digitalWrite(dir, LOW);
-
+  stepper.setMaxSpeed(1000);
+  //speed of stepper in steps per second
+  stepper.setSpeed(-(1500/((PI*11)/200)/60)/10);
 } 
 
 void loop() { 

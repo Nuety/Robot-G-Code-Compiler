@@ -4,6 +4,8 @@ import rtde_receive
 import re
 import math
 import serial
+import time
+
 
 #TODO save magic constants in seperate file
 
@@ -27,22 +29,32 @@ class controller():
         self.oldExtruding = False
         self.extruding = False
 
-    def sendCommandToArduino(self, state):
-        pass
+    def sendCommandToArduino(self, command):
+        arduino.write(bytes(command, 'utf-8')) 
 
+    def setTemperature(self, g, temp):
+        self.sendCommandToArduino(" ".join([g, str(temp)]))
+
+
+    #G28
     def returnHome(self):
         rtde_c.moveJ(homeJ, 2, 2)
                 
+    #enable or disable extrusion, used by G1 and G0 commands
     def setExtrusion(self, g):
         #set extrution mode
-        if g == "G0":
-            #stop printing if G0
-            self.extruding = False
-            arduino.write(bytes("G0", 'utf-8')) 
-        elif g == "G1":
-            #start printing if G1
-            self.extruding = True
-            arduino.write(bytes("G1", 'utf-8')) 
+        self.extruding = g[1]
+        self.sendCommandToArduino(g)
+        #if self.extruding is not needed this can be shortened.
+        # if g == "G0":
+        #     #stop printing if G0
+        #     self.extruding = False
+        #     self.sendCommandToArduino(g)
+        # elif g == "G1":
+        #     #start printing if G1
+        #     self.extruding = True
+        #     self.sendCommandToArduino(g)
+
     
     def run(self, path):
         #the midpoint where the hotplate should sit is 0.46,0,0
@@ -51,8 +63,12 @@ class controller():
         height = 0.0
         speed = 0.015
         for i, segment in enumerate(path):
-           #0, 1, 2, 3, 4, 5
-            g, x, y, z, f, e = segment
+            #0, 1, 2, 3, 4, 5
+            match len(segment):
+                case 2:
+                    g, s = segment
+                case 6:
+                    g, x, y, z, f, e = segment
             match g:
                 #if it is either G0 or G1 make the move and 
                 case "G0" | "G1":
@@ -78,10 +94,10 @@ class controller():
                             if x and y:
                                 # no need to oversend extrusion commands if the same command is the same as before.
                                 if self.extruding != self.oldExtruding:
-                                    self.sendCommandToArduino(self.extruding)
+                                    self.sendCommandToArduino(g)
 
 
-                                rtde_c.moveL([0.46 + x, y, height+0.1, rotation[0], rotation[1], rotation[2]], speed, 4)
+                                rtde_c.moveL([0.46 + x, y, height+0.2, rotation[0], rotation[1], rotation[2]], speed, 4)
                                 
                                 # update the command.
                                 self.oldExtruding = self.extruding
@@ -94,13 +110,27 @@ class controller():
                 #Relative Positioning
                 case "G91":
                     self.relative = True
-
-
+                #Set temperature of nozzle (non blocking)
+                case "M104":
+                    self.setTemperature("M104", s)
+                #Set temperature of bed (non blocking)
+                case "M140":
+                    self.setTemperature("M140", s)
+                #Set temperature of nozzle (blocking)
+                case "M109":
+                    self.setTemperature("M109", s)
+                #Set temperature of bed (blocking)
+                case "M190":
+                    self.setTemperature("M190", s)
             
 
+try:
+    ctrl = controller()
+    path = GCHandler.convertCode(commands)
+    ctrl.run(path)
+finally:
+    ctrl.sendCommandToArduino("G0")
+    ctrl.sendCommandToArduino("M104 30")
+    ctrl.sendCommandToArduino("M109 30")
 
-
-ctrl = controller()
-path = GCHandler.convertCode(commands)
-ctrl.run(path)
 

@@ -39,9 +39,28 @@ class GCodeHandler:
                 #Set Position
                 case "G92":
                     pass
+                case "M104" | "M109" | "M140" | "M190":
+                    path.append(self.extractTemperatures(i))
+                
                 case _:
                     pass
         return path
+
+    def extractTemperatures(self, string):
+        #extracts coordinates from command
+        #extracts G0|G1 in [g,x,y,z,f,e]
+        g = re.findall('([GM][\d.]+)', string)
+        s = list(map(float, re.findall('S([\d.]+)', string)))
+
+        tmp2 = [g, s]
+        result = []
+
+        for i in tmp2:
+            if i:
+                result.append(i[0])
+            else:
+                result.append(None)
+        return result
 
     def extractCoordinates(self, string):
         #extracts coordinates from command
