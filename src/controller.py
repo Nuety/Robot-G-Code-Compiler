@@ -30,7 +30,10 @@ class controller():
         self.extruding = False
 
     def sendCommandToArduino(self, command):
-        arduino.write(bytes(command, 'utf-8')) 
+        try:
+            arduino.write(bytes(command, 'utf-8')) 
+        except:
+            print(f"Send Command failed {command}")
 
     def setTemperature(self, g, temp):
         self.sendCommandToArduino(" ".join([g, str(temp)]))
@@ -97,7 +100,7 @@ class controller():
                                     self.sendCommandToArduino(g)
 
 
-                                rtde_c.moveL([0.46 + x, y, height+0.2, rotation[0], rotation[1], rotation[2]], speed, 4)
+                                rtde_c.moveL([0.34 + x, y - 0.1, height+0.11265, rotation[0], rotation[1], rotation[2]], speed, 4)
                                 
                                 # update the command.
                                 self.oldExtruding = self.extruding

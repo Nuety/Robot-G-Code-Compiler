@@ -17,11 +17,11 @@ float R1 = 100000;
 float LogRBed, RBed, TBed;
 float LogRHotend, RHotend, THotend;
 float A = 0.4184502937e-03, B = 2.524894441e-04, C = 0.1879018527e-07;
-float maxHotendTemp = 30.0;
-float maxBedTemp = 30.0;
+float maxHotendTemp = 200.0;
+float maxBedTemp = 50.0;
 
 AccelStepper stepper(1, stp, dir);
-bool servoRun = false;
+bool servoRun = 1;
 String Gcommand; 
 
 COROUTINE(Commands) {
@@ -34,7 +34,11 @@ COROUTINE(Commands) {
       servoRun = 1;      
     }
     else if(Gcommand.substring(0, 2) == "G0") {
-      servoRun = 0;
+      servoRun = 1;
+      stepper.setSpeed((1500/((PI*11)/200)/60));
+      stepper.runSpeed();
+      stepper.setSpeed(-(1500/((PI*11)/200)/60));
+
     } 
     else if (Gcommand.substring(0, 4) == "M140") {
       maxBedTemp = Gcommand.substring(4).toFloat();
@@ -53,7 +57,7 @@ COROUTINE(Commands) {
 
 COROUTINE(HeatingRoutine){
   COROUTINE_LOOP() {
-    COROUTINE_DELAY(1000);
+    COROUTINE_DELAY(500);
     VoBed = analogRead(ThermistorPinBed);
     RBed = R1 * (1023.0 / (float)VoBed - 1.0);
     LogRBed = log(RBed);
@@ -63,9 +67,9 @@ COROUTINE(HeatingRoutine){
     RHotend = R1 * (1023.0 / (float)VoHotend - 1.0);
     LogRHotend = log(RHotend);
     THotend = ((1.0 / (A + B*LogRHotend + C*LogRHotend*LogRHotend*LogRHotend)) - 273.15);
-    //check hotend temperature
 
-    if (THotend >= maxHotendTemp) {
+    //check hotend temperature
+    if (THotend >= (maxHotendTemp + 20)) {
       digitalWrite(relayPinHotend, LOW);
     } else {
       digitalWrite(relayPinHotend, HIGH);
@@ -77,6 +81,11 @@ COROUTINE(HeatingRoutine){
     } else {
       digitalWrite(relayPinBed, HIGH);
     }
+    Serial.print("Temperature: Hot end "); 
+    Serial.print(THotend);
+    Serial.print("C Bed ");
+    Serial.print(TBed);
+    Serial.println("C"); 
   }
 }
 
@@ -92,7 +101,7 @@ void setup() {
 	Serial.setTimeout(1); 
   stepper.setMaxSpeed(1000);
   //speed of stepper in steps per second
-  stepper.setSpeed(-(1500/((PI*11)/200)/60)/10);
+  stepper.setSpeed(-(1500/((PI*11)/200)/60)*1.5);
 } 
 
 void loop() { 
