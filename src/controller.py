@@ -12,6 +12,8 @@ import time
 homeJ = [math.radians(13), math.radians(-120), math.radians(-103), math.radians(-45), math.radians(90), math.radians(103)]
 homeL = [0.46, 0, 0.5]
 rotation = [0, 3.14, 0]
+xoffset = -0.05
+yoffset = 0.00
 
 arduino = serial.Serial(port='/dev/cu.usbmodem1101',   baudrate=115200, timeout=.1)
 
@@ -20,7 +22,7 @@ rtde_c = rtde_control.RTDEControlInterface("192.168.3.102")
 rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
 GCHandler = gch.GCodeHandler()
-commands = GCHandler.readfile("20mm_cube.gcode")
+commands = GCHandler.readfile("3dbenchy_with_adhesion_20infill.gcode")
 
 
 class controller():
@@ -100,7 +102,7 @@ class controller():
                                     self.sendCommandToArduino(g)
 
 
-                                rtde_c.moveL([0.34 + x, y - 0.1, height+0.11265, rotation[0], rotation[1], rotation[2]], speed, 4)
+                                rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+0.1114, rotation[0], rotation[1], rotation[2]], speed, 1)
                                 
                                 # update the command.
                                 self.oldExtruding = self.extruding
