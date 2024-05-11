@@ -65,7 +65,7 @@ COROUTINE(HeatingRoutine){
     THotend = ((1.0 / (A + B*LogRHotend + C*LogRHotend*LogRHotend*LogRHotend)) - 273.15);
 
     //check hotend temperature
-    if (THotend >= (maxHotendTemp)) {
+    if (THotend >= maxHotendTemp) {
       digitalWrite(relayPinHotend, LOW);
     } else {
       digitalWrite(relayPinHotend, HIGH);
