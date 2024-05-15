@@ -6,6 +6,9 @@ import math
 import serial
 import time
 
+#it is very important this is calibrated before running the printer
+heighoffset = 0.1114
+
 
 #TODO save magic constants in seperate file
 
@@ -79,8 +82,7 @@ class controller():
                 case "G0" | "G1":
                     print(f"{((i/tot)*100):.4f}% x: {x}, y: {y}, z: {height}")
                     #if height is set in the command change the command
-                    if z:
-                        height = z
+                    
 
                     #if speed is set change speed
                     if f:
@@ -92,9 +94,15 @@ class controller():
 
                     match self.relative:
                         case True:
-                            pass
+                            #TODO test version of relative control
+                            currentPos = rtde_r.getActualTCPPose()
+                            rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 1)
+                            
 
                         case False:
+                            if z:
+                                height = z
+                                
                             #move the robotarm if both x and y exist
                             if x and y:
                                 # no need to oversend extrusion commands if the same command is the same as before.
@@ -102,7 +110,7 @@ class controller():
                                     self.sendCommandToArduino(g)
 
 
-                                rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+0.1114, rotation[0], rotation[1], rotation[2]], speed, 1)
+                                rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+heighoffset, rotation[0], rotation[1], rotation[2]], speed, 1)
                                 
                                 # update the command.
                                 self.oldExtruding = self.extruding
