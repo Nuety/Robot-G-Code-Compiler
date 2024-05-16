@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<robot name="robot_arm">
+
+    /*Link definitions*/
+    
+    <link name="Base_link">
+        <visual>
+            <origin xyz="0 0 0.1"/>
+            <geometry>
+                <cylinder length="0.2" radius="0.3"/>
+            </geometry>
+            <material name="Blue">
+                <color rgba="0.0 0.0 1.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+    <link name="Shoulder_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.2 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+    <link name="Shoulder_link">
+        <visual>
+            <origin xyz="0 0.2 0" rpy="1.56 0 0"/>
+            <geometry>
+                <cylinder length="0.2" radius="0.1"/>
+            </geometry>
+            <material name="Red">
+                <color rgba="1.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+    <link name="Elbow_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.2 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+    <link name="Elbow_link">
+        <visual>
+            <origin xyz="0 0 0.35" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="0.5" radius="0.1"/>
+            </geometry>
+            <material name="Green">
+                <color rgba="0.0 1.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="Wrist_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.4 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+
+    <link name="Wrist_link">
+        <visual>
+            <origin xyz="0 -0.1 0.35" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="0.5" radius="0.1"/>
+            </geometry>
+            <material name="Yellow">
+                <color rgba="1.0 1.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="Wrist1_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.4 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+
+    <link name="Wrist1_link">
+        <visual>
+            <origin xyz="0 0.1 0.25" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="0.3" radius="0.1"/>
+            </geometry>
+            <material name="Purple">
+                <color rgba="0.5 0.2 1.5 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="Wrist2_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.2 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+
+    <link name="Wrist2_link">
+        <visual>
+            <origin xyz="-0.25 0.0 0.0" rpy="0 1.56 0"/>
+            <geometry>
+                <cylinder length="0.3" radius="0.1"/>
+            </geometry>
+            <material name="Magenta">
+                <color rgba="1.5 0.2 1.5 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="Wrist3_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.2 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+
+    /*Joint revolute definitions*/
+    
+    <joint name="Base_to_shoulder" type="revolute">
+        <origin xyz="0.0 0.0 0.3" rpy="0 0 0" />
+        <parent link="Base_link"/>
+        <child link="Shoulder_link_j"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14" effort="10" velocity="1"/>
+    </joint>
+    
+    <joint name="Shoulder_to_elbow" type="revolute">
+        <origin xyz="0.0 0.4 0.0" rpy="0 0 0" />
+        <parent link="Shoulder_link"/>
+        <child link="Elbow_link_j"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="1"/>
+    </joint>
+
+    <joint name="Elbow_to_wrist" type="revolute">
+        <origin xyz="0.0 -0.1 0.7" rpy="0 0 0" />
+        <parent link="Elbow_link"/>
+        <child link="Wrist_link_j"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="1"/>
+    </joint>
+
+    <joint name="Wrist_to_wrist1" type="revolute">
+        <origin xyz="0.0 0.0 0.7" rpy="0 0 0" />
+        <parent link="Wrist_link"/>
+        <child link="Wrist1_link_j"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="1"/>
+    </joint>
+
+    <joint name="Wrist1_to_wrist2" type="revolute">
+        <origin xyz="0.0 0.1 0.5" rpy="0 0 0" />
+        <parent link="Wrist1_link"/>
+        <child link="Wrist2_link_j"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="1"/>
+    </joint>
+
+    <joint name="Wris2_to_wrist3" type="revolute">
+        <origin xyz="-0.5 0.0 0.0" rpy="0 0 0" />
+        <parent link="Wrist2_link"/>
+        <child link="Wrist3_link_j"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="1"/>
+    </joint>
+    /*Joint fixed definitions*/
+    
+    <joint name="Shoulder_fixed" type="fixed">
+        <parent link="Shoulder_link_j"/>
+        <child link="Shoulder_link"/>
+    </joint>
+
+    <joint name="Elbow_fixed" type="fixed">
+        <parent link="Elbow_link_j"/>
+        <child link="Elbow_link"/>
+    </joint>
+
+    <joint name="Wrist_fixed" type="fixed">
+        <parent link="Wrist_link_j"/>
+        <child link="Wrist_link"/>
+    </joint>
+
+    <joint name="Wrist1_fixed" type="fixed">
+        <parent link="Wrist1_link_j"/>
+        <child link="Wrist1_link"/>
+    </joint>
+
+    <joint name="Wrist2_fixed" type="fixed">
+        <parent link="Wrist2_link_j"/>
+        <child link="Wrist2_link"/>
+    </joint>
+    
+</robot>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="robot_arm">
+
+    <link name="Base_link">
+        <visual>
+            <origin xyz="0.0 0.0 0.25"/>
+            <geometry>
+                <cylinder length="0.5" radius="0.25"/>
+            </geometry>
+            <material name="Blue">
+                <color rgba="0.0 0.0 1.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+</robot>

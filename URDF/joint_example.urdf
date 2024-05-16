@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot name="robot_arm">
+
+    /*Link definitions*/
+    
+    <link name="Base_link">
+        <visual>
+            <origin xyz="0 0 0.1"/>
+            <geometry>
+                <cylinder length="0.2" radius="0.3"/>
+            </geometry>
+            <material name="Blue">
+                <color rgba="0.0 0.0 1.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+    <link name="Shoulder_link_j">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.2 0.2 0.2" />
+            </geometry>
+            <material name="Cyan">
+                <color rgba="0 1.0 1.0 1.0"/>
+            </material>
+          </visual>
+    </link>
+    <link name="Shoulder_link">
+        <visual>
+            <origin xyz="0 0.3 0" rpy="1.56 0 0"/>
+            <geometry>
+                <cylinder length="0.4" radius="0.1"/>
+            </geometry>
+            <material name="Red">
+                <color rgba="1.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    /*Joint revolute definitions*/
+
+    <joint name="Base_to_shoulder" type="revolute">
+        <origin xyz="0.0 0.0 0.3" rpy="0 0 0" />
+        <parent link="Base_link"/>
+        <child link="Shoulder_link_j"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3" upper="3" effort="10" velocity="1"/>
+    </joint>
+
+    <joint name="Shoulder_fixed" type="fixed">
+        <parent link="Shoulder_link_j"/>
+        <child link="Shoulder_link"/>
+    </joint>
+
+</robot>
