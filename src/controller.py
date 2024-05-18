@@ -72,6 +72,7 @@ class controller():
         speed = 0.015
         for i, segment in enumerate(path):
             #0, 1, 2, 3, 4, 5
+            #TODO MAKE THIS BETTER DONT USE LENGTH
             match len(segment):
                 case 2:
                     g, s = segment
