@@ -40,8 +40,8 @@ class controller():
         except:
             print(f"Send Command failed {command}")
 
-    def setTemperature(self, g, temp):
-        self.sendCommandToArduino(" ".join([g, str(temp)]))
+    def setTemperature(self, cmd, temp):
+        self.sendCommandToArduino(" ".join([cmd, str(temp)]))
 
 
     #G28
@@ -49,10 +49,10 @@ class controller():
         rtde_c.moveJ(homeJ, 2, 2)
                 
     #enable or disable extrusion, used by G1 and G0 commands
-    def setExtrusion(self, g):
+    def setExtrusion(self, cmd):
         #set extrution mode
-        self.extruding = g[1]
-        self.sendCommandToArduino(g)
+        self.extruding = cmd[1]
+        self.sendCommandToArduino(cmd)
         #if self.extruding is not needed this can be shortened.
         # if g == "G0":
         #     #stop printing if G0
@@ -75,10 +75,10 @@ class controller():
             #TODO MAKE THIS BETTER DONT USE LENGTH
             match len(segment):
                 case 2:
-                    g, s = segment
+                    cmd, s = segment
                 case 6:
-                    g, x, y, z, f, e = segment
-            match g:
+                    cmd, x, y, z, f, e = segment
+            match cmd:
                 #if it is either G0 or G1 make the move and 
                 case "G0" | "G1":
                     print(f"{((i/tot)*100):.4f}% x: {x}, y: {y}, z: {height}")
@@ -90,7 +90,7 @@ class controller():
                         #speed in gcode is mm/min and robot moves in m/s so we divide by 60000
                         speed = f/60000
 
-                    self.setExtrusion(g)
+                    self.setExtrusion(cmd)
                         
 
                     match self.relative:
@@ -108,7 +108,7 @@ class controller():
                             if x and y:
                                 # no need to oversend extrusion commands if the same command is the same as before.
                                 if self.extruding != self.oldExtruding:
-                                    self.sendCommandToArduino(g)
+                                    self.sendCommandToArduino(cmd)
 
 
                                 rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+heighoffset, rotation[0], rotation[1], rotation[2]], speed, 1)

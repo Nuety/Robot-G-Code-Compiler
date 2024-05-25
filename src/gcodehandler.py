@@ -48,11 +48,11 @@ class GCodeHandler:
 
     def extractTemperatures(self, string):
         #extracts coordinates from command
-        #extracts G0|G1 in [g,x,y,z,f,e]
-        g = re.findall('([GM][\d.]+)', string)
+        #extracts G0|G1 in [cmd,x,y,z,f,e]
+        cmd = re.findall('([GM][\d.]+)', string)
         s = list(map(float, re.findall('S([\d.]+)', string)))
 
-        tmp2 = [g, s]
+        tmp2 = [cmd, s]
         result = []
 
         for i in tmp2:
@@ -64,8 +64,8 @@ class GCodeHandler:
 
     def extractCoordinates(self, string):
         #extracts coordinates from command
-        #extracts G0|G1 in [g,x,y,z,f,e]
-        g = re.findall('(G[\d.]+)', string)
+        #extracts G0|G1 in [cmd,x,y,z,f,e]
+        cmd = re.findall('(G[\d.]+)', string)
         x = list(map(float, re.findall('X([\d.]+)', string)))
         y = list(map(float, re.findall('Y([\d.]+)', string)))
         z = list(map(float, re.findall('Z([\d.]+)', string)))
@@ -73,7 +73,7 @@ class GCodeHandler:
         e = list(map(float, re.findall('E([\d.]+)', string)))
 
         tmp = [x, y, z]
-        tmp2 = [g, None, None, None, f, e]
+        tmp2 = [cmd, None, None, None, f, e]
         result = []
 
 
