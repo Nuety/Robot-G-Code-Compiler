@@ -7,7 +7,7 @@ import serial
 import time
 
 #it is very important this is calibrated before running the printer
-heighoffset = 0.1170 + 0.2
+heighoffset = 0.1177
 
 
 #TODO save magic constants in seperate file
@@ -25,8 +25,8 @@ rtde_c = rtde_control.RTDEControlInterface("192.168.3.102")
 rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
 GCHandler = gch.GCodeHandler()
-# commands = GCHandler.readfile("3dbenchy_with_adhesion_20infill.gcode")
-commands = GCHandler.readfile("clean.gcode")
+commands = GCHandler.readfile("3dbenchy_adhesion_20infill_scale50.gcode")
+# commands = GCHandler.readfile("clean.gcode")
 
 
 class controller():
@@ -104,7 +104,7 @@ class controller():
                             y = 0 if not y else y
                             z = 0 if not z else z
 
-                            rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 1)
+                            rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 0.5)
                             
 
                         case False:
@@ -118,7 +118,7 @@ class controller():
                                     self.sendCommandToArduino(cmd)
 
 
-                                rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+heighoffset, rotation[0], rotation[1], rotation[2]], speed, 1)
+                                rtde_c.moveL([0.36 + x + xoffset, y + yoffset - 0.1, height+heighoffset, rotation[0], rotation[1], rotation[2]], speed, 0.5)
                                 
                                 # update the command.
                                 self.oldExtruding = self.extruding

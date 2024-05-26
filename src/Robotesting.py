@@ -13,5 +13,6 @@ for i in tmp:
   rtde_c.moveL(i, 0.05, 2)
 for i in tmp:
   rtde_c.moveL(i, 0.05, 1)
-
+for i in tmp:
+  rtde_c.moveL(i, 0.05, 0.5)
 rtde_c.stopScript()
