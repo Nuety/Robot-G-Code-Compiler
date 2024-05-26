@@ -32,10 +32,10 @@ class GCodeHandler:
                     path.append(["G28", 0, 0, 0, 0, 0])
                 #Absolute Positioning
                 case "G90":
-                    pass
+                    path.append(["G90", 0, 0, 0, 0, 0])
                 #Relative Positioning
                 case "G91":
-                    pass
+                    path.append(["G91", 0, 0, 0, 0, 0])
                 #Set Position
                 case "G92":
                     pass

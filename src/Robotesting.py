@@ -6,12 +6,12 @@ rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 tmp = [[0.416, -0.107, 0.10, 0, 3.14, 0], [0.406, -0.107, 0.10, 0, 3.14, 0], [0.406, -0.117, 0.10, 0, 3.14, 0],[0.416, -0.117, 0.10, 0, 3.14, 0]]
 
 for i in tmp:
-  rtde_c.moveL(i, 0.005, 4)
+  rtde_c.moveL(i, 0.05, 4)
 for i in tmp:
-  rtde_c.moveL(i, 0.005, 3)
+  rtde_c.moveL(i, 0.05, 3)
 for i in tmp:
-  rtde_c.moveL(i, 0.005, 2)
+  rtde_c.moveL(i, 0.05, 2)
 for i in tmp:
-  rtde_c.moveL(i, 0.005, 1)
+  rtde_c.moveL(i, 0.05, 1)
 
 rtde_c.stopScript()

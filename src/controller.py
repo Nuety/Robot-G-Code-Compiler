@@ -7,7 +7,7 @@ import serial
 import time
 
 #it is very important this is calibrated before running the printer
-heighoffset = 0.1114
+heighoffset = 0.1170 + 0.2
 
 
 #TODO save magic constants in seperate file
@@ -25,7 +25,8 @@ rtde_c = rtde_control.RTDEControlInterface("192.168.3.102")
 rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
 GCHandler = gch.GCodeHandler()
-commands = GCHandler.readfile("3dbenchy_with_adhesion_20infill.gcode")
+# commands = GCHandler.readfile("3dbenchy_with_adhesion_20infill.gcode")
+commands = GCHandler.readfile("clean.gcode")
 
 
 class controller():
@@ -73,6 +74,7 @@ class controller():
         for i, segment in enumerate(path):
             #0, 1, 2, 3, 4, 5
             #TODO MAKE THIS BETTER DONT USE LENGTH
+            print(segment)
             match len(segment):
                 case 2:
                     cmd, s = segment
@@ -95,8 +97,13 @@ class controller():
 
                     match self.relative:
                         case True:
-                            #TODO test version of relative control
                             currentPos = rtde_r.getActualTCPPose()
+
+                            #if xyz is None set to 0 to remove float addition error
+                            x = 0 if not x else x
+                            y = 0 if not y else y
+                            z = 0 if not z else z
+
                             rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 1)
                             
 
@@ -105,7 +112,7 @@ class controller():
                                 height = z
                                 
                             #move the robotarm if both x and y exist
-                            if x and y:
+                            if x or y:
                                 # no need to oversend extrusion commands if the same command is the same as before.
                                 if self.extruding != self.oldExtruding:
                                     self.sendCommandToArduino(cmd)
@@ -121,9 +128,12 @@ class controller():
                 #Absolute Positioning
                 case "G90":
                     self.relative = False
+                    print("relative OFF")
                 #Relative Positioning
                 case "G91":
                     self.relative = True
+                    print("relative ON")
+
                 #Set temperature of nozzle (non blocking)
                 case "M104":
                     self.setTemperature("M104", s)

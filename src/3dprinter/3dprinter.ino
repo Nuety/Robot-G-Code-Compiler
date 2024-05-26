@@ -92,7 +92,7 @@ void setup() {
 	Serial.setTimeout(1); 
   stepper.setMaxSpeed(1000);
   //speed of stepper in steps per second
-  stepper.setSpeed(-(1500/((PI*11)/200)/60)*0.12);
+  stepper.setSpeed(-(1500/((PI*11)/200)/60)*0.2);
 } 
 
 void loop() { 
