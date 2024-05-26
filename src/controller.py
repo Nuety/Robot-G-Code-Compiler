@@ -26,7 +26,6 @@ rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
 GCHandler = gch.GCodeHandler()
 commands = GCHandler.readfile("3dbenchy_adhesion_20infill_scale50.gcode")
-# commands = GCHandler.readfile("clean.gcode")
 
 
 class controller():
@@ -54,15 +53,6 @@ class controller():
         #set extrution mode
         self.extruding = cmd[1]
         self.sendCommandToArduino(cmd)
-        #if self.extruding is not needed this can be shortened.
-        # if g == "G0":
-        #     #stop printing if G0
-        #     self.extruding = False
-        #     self.sendCommandToArduino(g)
-        # elif g == "G1":
-        #     #start printing if G1
-        #     self.extruding = True
-        #     self.sendCommandToArduino(g)
 
     
     def run(self, path):
@@ -96,15 +86,18 @@ class controller():
                         
 
                     match self.relative:
-                        case True:
-                            currentPos = rtde_r.getActualTCPPose()
+                        
+                        # relative control had severe issues
 
-                            #if xyz is None set to 0 to remove float addition error
-                            x = 0 if not x else x
-                            y = 0 if not y else y
-                            z = 0 if not z else z
+                        # case True:
+                        #     currentPos = rtde_r.getActualTCPPose()
 
-                            rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 0.5)
+                        #     #if xyz is None set to 0 to remove float addition error
+                        #     x = 0 if not x else x
+                        #     y = 0 if not y else y
+                        #     z = 0 if not z else z
+
+                        #     rtde_c.moveL([currentPos[0] + x, currentPos[1] + y, currentPos[2] + z, rotation[0], rotation[1], rotation[2]], speed, 0.5)
                             
 
                         case False:
@@ -112,7 +105,7 @@ class controller():
                                 height = z
                                 
                             #move the robotarm if both x and y exist
-                            if x or y:
+                            if x and y:
                                 # no need to oversend extrusion commands if the same command is the same as before.
                                 if self.extruding != self.oldExtruding:
                                     self.sendCommandToArduino(cmd)
