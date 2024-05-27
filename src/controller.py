@@ -7,14 +7,14 @@ import serial
 import time
 
 #it is very important this is calibrated before running the printer
-heighoffset = 0.1177
+heighoffset = 0.11532
 
 
 #TODO save magic constants in seperate file
 
 homeJ = [math.radians(13), math.radians(-120), math.radians(-103), math.radians(-45), math.radians(90), math.radians(103)]
-homeL = [0.46, 0, 0.5]
 rotation = [0, 3.14, 0]
+homeL = [0.46, 0, 0.35, rotation[0], rotation[1], rotation[2]]
 xoffset = -0.05
 yoffset = 0.00
 
@@ -25,7 +25,7 @@ rtde_c = rtde_control.RTDEControlInterface("192.168.3.102")
 rtde_r = rtde_receive.RTDEReceiveInterface("192.168.3.102")
 
 GCHandler = gch.GCodeHandler()
-commands = GCHandler.readfile("3dbenchy_adhesion_20infill_scale50.gcode")
+commands = GCHandler.readfile("CE3PRO_bird_whistle.gcode")
 
 
 class controller():
@@ -46,7 +46,7 @@ class controller():
 
     #G28
     def returnHome(self):
-        rtde_c.moveJ(homeJ, 2, 2)
+        rtde_c.moveL(homeL, 1, 0.5)
                 
     #enable or disable extrusion, used by G1 and G0 commands
     def setExtrusion(self, cmd):
@@ -145,9 +145,11 @@ try:
     ctrl = controller()
     path = GCHandler.convertCode(commands)
     ctrl.run(path)
+    #when finished move to home
+    rtde_c.moveL(homeL, 0.05, 0.5)
+
 finally:
     ctrl.sendCommandToArduino("G0")
     ctrl.sendCommandToArduino("M104 30")
     ctrl.sendCommandToArduino("M109 30")
-
 
