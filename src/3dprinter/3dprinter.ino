@@ -96,7 +96,7 @@ void setup() {
 } 
 
 void loop() { 
+  Commands.runCoroutine();
   ServoRoutine.runCoroutine();
   HeatingRoutine.runCoroutine();
-  Commands.runCoroutine();
 }
