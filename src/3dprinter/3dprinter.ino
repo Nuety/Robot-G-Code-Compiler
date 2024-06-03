@@ -16,6 +16,7 @@ int VoBed, VoHotend;
 float R1 = 100000;
 float LogRBed, RBed, TBed;
 float LogRHotend, RHotend, THotend;
+//From thermister calculator described in report
 float A = 0.4184502937e-03, B = 2.524894441e-04, C = 0.1879018527e-07;
 float maxHotendTemp = 200.0;
 float maxBedTemp = 60.0;
@@ -64,14 +65,14 @@ COROUTINE(HeatingRoutine){
     LogRHotend = log(RHotend);
     THotend = ((1.0 / (A + B*LogRHotend + C*LogRHotend*LogRHotend*LogRHotend)) - 273.15);
 
-    //check hotend temperature
+    //Check hotend temperature
     if (THotend >= maxHotendTemp) {
       digitalWrite(relayPinHotend, LOW);
     } else {
       digitalWrite(relayPinHotend, HIGH);
     }
 
-    //check bed temperature
+    //Check bed temperature
     if (TBed >= maxBedTemp) {
       digitalWrite(relayPinBed, LOW);
     } else {
@@ -91,7 +92,7 @@ void setup() {
 	Serial.begin(115200); 
 	Serial.setTimeout(1); 
   stepper.setMaxSpeed(1000);
-  //speed of stepper in steps per second
+  //Speed of stepper in steps per second
   stepper.setSpeed(-(1500/((PI*11)/200)/60)*0.1);
 } 
 
