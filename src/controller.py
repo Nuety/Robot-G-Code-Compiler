@@ -64,7 +64,6 @@ class controller():
         height = 0.0
         speed = 0.015
         for i, segment in enumerate(path):
-            #TODO MAKE THIS BETTER DONT USE LENGTH
             match len(segment):
                 #If temperature
                 case 2:
