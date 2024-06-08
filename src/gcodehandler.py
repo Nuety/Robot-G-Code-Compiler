@@ -5,29 +5,26 @@ class GCodeHandler:
         pass
 
     def readfile(self, path):
-        #open the file path here 
+        #Open the file path here 
         cmd = []
         with open(path) as f:
             commands = f.read().splitlines()
             for i in commands:
                 cmd.append(i.rstrip())
-
+        #return list of lists
         return cmd
-    
+   
     def convertCode(self, commands):
         path = []
         for i in commands:
-            #NOTE THAT I CHANGED THE NAME OF THE SPLITTED 'i'
             cmd = i.split()
             if not cmd:
                 continue
             match cmd[0]:
-                #move with or without extruder
+                #Move with or without extrusion
                 case "G0" | "G1":
-                    #print(self.extractCoordinates(i))
                     path.append(self.extractCoordinates(i))
-                #return home
-                #TODO Check if filament stuff works with this method
+                #Return home
                 case "G28":
                     path.append(["G28", 0, 0, 0, 0, 0])
                 #Absolute Positioning
@@ -41,21 +38,20 @@ class GCodeHandler:
                     pass
                 case "M104" | "M109" | "M140" | "M190":
                     path.append(self.extractTemperatures(i))
-                
                 case _:
                     pass
         return path
 
     def extractTemperatures(self, string):
-        #extracts coordinates from command
-        #extracts G0|G1 in [cmd,x,y,z,f,e]
+        #Extracts parameter from command
+        #Find G or M followed by some number
         cmd = re.findall('([GM][\d.]+)', string)
         s = list(map(float, re.findall('S([\d.]+)', string)))
 
-        tmp2 = [cmd, s]
+        tmp = [cmd, s]
         result = []
 
-        for i in tmp2:
+        for i in tmp:
             if i:
                 result.append(i[0])
             else:
@@ -63,8 +59,8 @@ class GCodeHandler:
         return result
 
     def extractCoordinates(self, string):
-        #extracts coordinates from command
-        #extracts G0|G1 in [cmd,x,y,z,f,e]
+        #Extracts coordinates from command
+        #Extracts G0|G1 in [cmd,x,y,z,f,e]
         cmd = re.findall('(G[\d.]+)', string)
         x = list(map(float, re.findall('X([\d.]+)', string)))
         y = list(map(float, re.findall('Y([\d.]+)', string)))
@@ -76,18 +72,13 @@ class GCodeHandler:
         tmp2 = [cmd, None, None, None, f, e]
         result = []
 
-
-        #TODO this is gross
-        #TODO find a better way other than 3 lists and 2 forloops
         for i, coord in enumerate(tmp):
             if coord:
-                #divide by 1000 since gcode uses mm values and we use meter
+                #Divide by 1000 since gcode uses mm values and we use meter
                 tmp2[i+1] = [round(coord[0]/1000, 8)]
-
         for i in tmp2:
             if i:
                 result.append(i[0])
             else:
                 result.append(None)
-
         return result

@@ -16,7 +16,7 @@ int VoBed, VoHotend;
 float R1 = 100000;
 float LogRBed, RBed, TBed;
 float LogRHotend, RHotend, THotend;
-//From thermister calculator described in report
+//From thermister calculator 
 float A = 0.4184502937e-03, B = 2.524894441e-04, C = 0.1879018527e-07;
 float maxHotendTemp = 200.0;
 float maxBedTemp = 60.0;
